@@ -1,0 +1,120 @@
+﻿
+@{
+    ViewBag.Title = "Users";
+}
+
+<link href="~/Content/lumen.bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/DataTables/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+<h2 class="alert alert-primary text-center">Users</h2>
+
+<a onclick="PopupForm('@Url.Action("AddOrEdit","User")')" class="btn btn-success mb-4 text-white"><i class="fa fa-plus"></i> Add New User</a>
+
+<table id="UserTable" class="table table-striped w-100">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Position</th>
+            <th>Office</th>
+            <th>Age</th>
+            <th>Salary</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+</table>
+@section scripts{
+    <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.bootstrap4.min.js"></script>
+    <script>
+        var Popup, dataTable;
+        $(document).ready(function () {
+            dataTable = $("#UserTable").DataTable({
+                "ajax": {
+                    "url": "/User/GetData",
+                    "type": "GET",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "Name" },
+                    { "data": "Position" },
+                    { "data": "Office" },
+                    { "data": "Age" },
+                    { "data": "Salary" },
+                    {
+                        "data": "UserID", "render": function (data) {
+                            return "<a class='btn btn-primary btn-sm text-white' onclick=PopupForm('@Url.Action("AddOrEdit","User")/" + data + "')><i class='fa fa-pencil-alt'></i> Edit</a> <a class='btn btn-danger btn-sm ml-1 text-white' onclick=Delete("+data+")><i class='fa fa-trash'></i> Delete</a>";
+                        },
+                        "orderable": false,
+                        "searchable":false,
+                    }
+                ],
+                "language": {
+                    "emptyTable": "No data found. Please click on <b>Add New Button</b>"
+                }
+            });
+        });
+
+        function PopupForm(url) {
+            var formDiv = $('<div/>');
+            $.get(url)
+                .done(function (response) {
+                    formDiv.html(response);
+                    Popup = formDiv.dialog({
+                        autoOpen: true,
+                        resizable: false,
+                        title: "Enter your details",
+                        height: 600,
+                        width: 600,
+                        close: function () {
+                            Popup.dialog('destroy').remove();
+                        }
+                    });
+                });
+        }
+
+        function SubmitForm(form) {
+
+            $.validator.unobtrusive.parse(form);
+            if ($(form).valid()) {
+                $.ajax({
+                    type: "POST",
+                    url: form.action,
+                    data: $(form).serialize(),
+                    success: function (data) {
+                        if (data.success) {
+                            Popup.dialog('close');
+                            dataTable.ajax.reload();
+
+                            $.notify(data.message,
+                                {
+                                    globalPosition: "top center",
+                                    className: "success"
+                                });
+                        }
+                    }
+                });
+            }
+            return false;
+        }
+
+        function Delete(id) {
+            if (confirm('Are you sure to Delete this user ??')) {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("Delete","User")/' + id ,
+                    success: function(data) {
+                        if (data.success) {
+                            dataTable.ajax.reload();
+
+                            $.notify(data.message,
+                                {
+                                    globalPosition: "top center",
+                                    className: "success"
+                                });
+                        }
+                    }
+                });
+            }
+        }
+
+    </script>
+}

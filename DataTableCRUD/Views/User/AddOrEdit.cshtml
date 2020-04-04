@@ -1,0 +1,46 @@
+﻿@model DataTableCRUD.Models.DBModel.User
+@{
+    Layout = null;
+}
+
+@using (Html.BeginForm("AddOrEdit", "User", FormMethod.Post, new { onsubmit = "return SubmitForm(this)" }))
+{
+    @Html.HiddenFor(model => model.UserID)
+    <div class="col-md-12">
+        <div class="form-group col-md-12">
+            @Html.LabelFor(model => model.Name, new { @class = "font-weight-bold" })
+            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Name, null, new { @class = "text-danger" })
+        </div>
+        <div class="form-group col-md-12">
+            @Html.LabelFor(model => model.Position, new { @class = "font-weight-bold" })
+            @Html.EditorFor(model => model.Position, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Position, null, new { @class = "text-danger" })
+        </div>
+        <div class="form-group col-md-12">
+            @Html.LabelFor(model => model.Office, new { @class = "font-weight-bold" })
+            @Html.EditorFor(model => model.Office, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+        <div class="form-group col-md-12">
+            @Html.LabelFor(model => model.Age, new { @class = "font-weight-bold" })
+            @Html.EditorFor(model => model.Age, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+        <div class="form-group col-md-12">
+            @Html.LabelFor(model => model.Salary, new { @class = "font-weight-bold" })
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">$</span>
+                </div>
+                @Html.EditorFor(model => model.Salary, new { htmlAttributes = new { @class = "form-control" } })
+                <div class="input-group-append">
+                    <span class="input-group-text">.00</span>
+                </div>
+            </div>
+
+        </div>
+        <div class="form-group col-md-12">
+            <input type="submit" value="Add New User" class="btn btn-success" />
+            <input type="reset" value="Reset" class="btn btn-warning" />
+        </div>
+    </div>
+}
